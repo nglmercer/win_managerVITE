@@ -17,7 +17,7 @@ export class WindowManagerApp extends LitElement {
   @state() private wsService: WebSocketService | null = null;
   @state() private windows: WindowInfo[] = [];
   @state() private isLoading = true;
-  @state() private isConnected = false;
+  @state() public isConnected = false;
   @state() private notification: AppNotification | null = null;
 
   // Referencia al componente del formulario para poder resetearlo
