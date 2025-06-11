@@ -15,13 +15,41 @@ export class CreateWindowFormComponent extends LitElement {
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 20px;
+
+      --primary-color: #007bff;
+      --primary-dark: #0056b3;
+      --secondary-color: #6c757d;
+      --secondary-dark: #5a6268;
+      --danger-color: #dc3545;
+      --border-color: #dee2e6;
+      --bg-primary: #ffffff;
+      --bg-light: #f8f9fa;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --text-muted: #6c757d;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :host {
+        --primary-color: #66b2ff;
+        --primary-dark: #3399ff;
+        --secondary-color: #999ea2;
+        --secondary-dark: #868e96;
+        --danger-color: #ff6b6b;
+        --border-color: #444c56;
+        --bg-primary: #1e1e1e;
+        --bg-light: #2c2c2c;
+        --text-primary: #f1f1f1;
+        --text-secondary: #aaaaaa;
+        --text-muted: #888888;
+      }
     }
 
     .form-title {
       margin: 0 0 20px 0;
       font-size: 18px;
       font-weight: 600;
-      color: var(--text-primary, #212529);
+      color: var(--text-primary);
     }
 
     .form-group {
@@ -32,28 +60,30 @@ export class CreateWindowFormComponent extends LitElement {
       display: block;
       margin-bottom: 6px;
       font-weight: 500;
-      color: var(--text-primary, #212529);
+      color: var(--text-primary);
       font-size: 14px;
     }
 
     .form-input {
       width: 100%;
       padding: 10px 12px;
-      border: 1px solid var(--border-color, #ced4da);
+      border: 1px solid var(--border-color);
       border-radius: 4px;
       font-size: 14px;
       transition: border-color 0.2s ease;
       box-sizing: border-box;
+      background: var(--bg-light);
+      color: var(--text-primary);
     }
 
     .form-input:focus {
       outline: none;
-      border-color: var(--primary-color, #007bff);
+      border-color: var(--primary-color);
       box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
     }
 
     .form-input.error {
-      border-color: var(--danger-color, #dc3545);
+      border-color: var(--danger-color);
     }
 
     .form-actions {
@@ -79,21 +109,21 @@ export class CreateWindowFormComponent extends LitElement {
     }
 
     .btn-primary {
-      background: var(--primary-color, #007bff);
+      background: var(--primary-color);
       color: white;
     }
 
     .btn-primary:hover:not(:disabled) {
-      background: var(--primary-dark, #0056b3);
+      background: var(--primary-dark);
     }
 
     .btn-secondary {
-      background: var(--secondary-color, #6c757d);
+      background: var(--secondary-color);
       color: white;
     }
 
     .btn-secondary:hover:not(:disabled) {
-      background: var(--secondary-dark, #5a6268);
+      background: var(--secondary-dark);
     }
 
     .loading-spinner {
@@ -113,7 +143,7 @@ export class CreateWindowFormComponent extends LitElement {
 
     .form-help {
       font-size: 12px;
-      color: var(--text-muted, #6c757d);
+      color: var(--text-muted);
       margin-top: 4px;
     }
 
@@ -124,7 +154,7 @@ export class CreateWindowFormComponent extends LitElement {
     .quick-urls-title {
       font-size: 12px;
       font-weight: 500;
-      color: var(--text-secondary, #6c757d);
+      color: var(--text-secondary);
       margin-bottom: 8px;
     }
 
@@ -136,21 +166,22 @@ export class CreateWindowFormComponent extends LitElement {
 
     .quick-url-btn {
       padding: 4px 8px;
-      border: 1px solid var(--border-color, #dee2e6);
+      border: 1px solid var(--border-color);
       border-radius: 4px;
-      background: var(--bg-light, #f8f9fa);
-      color: var(--text-secondary, #6c757d);
+      background: var(--bg-light);
+      color: var(--text-secondary);
       font-size: 11px;
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
     .quick-url-btn:hover {
-      background: var(--primary-color, #007bff);
+      background: var(--primary-color);
       color: white;
-      border-color: var(--primary-color, #007bff);
+      border-color: var(--primary-color);
     }
   `;
+
 
   private quickUrls = [
     { label: 'Google', url: 'https://www.google.com' },

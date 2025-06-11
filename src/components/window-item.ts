@@ -11,11 +11,51 @@ export class WindowItemComponent extends LitElement {
     :host {
       display: block;
       margin-bottom: 8px;
+
+      --primary-color: #007bff;
+      --primary-dark: #0056b3;
+      --primary-light: #e3f2fd;
+      --secondary-color: #6c757d;
+      --danger-color: #dc3545;
+      --danger-dark: #c82333;
+      --success-color: #28a745;
+      --success-light: #d4edda;
+      --warning-color: #ffc107;
+      --info-color: #17a2b8;
+      --info-dark: #138496;
+      --border-color: #dee2e6;
+      --bg-secondary: #f8f9fa;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --text-muted: #6c757d;
+      --text-dark: #212529;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :host {
+        --primary-color: #66b2ff;
+        --primary-dark: #3399ff;
+        --primary-light: #1a2a3a;
+        --secondary-color: #999ea2;
+        --danger-color: #ff6b6b;
+        --danger-dark: #e55353;
+        --success-color: #51d88a;
+        --success-light: #253b2d;
+        --warning-color: #ffd65a;
+        --info-color: #4cc9f0;
+        --info-dark: #3aa7cb;
+        --border-color: #444c56;
+        --bg-secondary: #2c2c2c;
+        --text-primary: #f1f1f1;
+        --text-secondary: #aaaaaa;
+        --text-muted: #888888;
+        --text-dark: #f8f9fa;
+      }
     }
 
     .window-item {
-      background: var(--bg-secondary, #f8f9fa);
-      border: 2px solid var(--border-color, #dee2e6);
+      background: var(--bg-secondary);
+      border: 2px solid var(--border-color);
       border-radius: 8px;
       padding: 16px;
       cursor: pointer;
@@ -24,18 +64,18 @@ export class WindowItemComponent extends LitElement {
     }
 
     .window-item:hover {
-      border-color: var(--primary-color, #007bff);
+      border-color: var(--primary-color);
       box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
     }
 
     .window-item.selected {
-      border-color: var(--primary-color, #007bff);
-      background: var(--primary-light, #e3f2fd);
+      border-color: var(--primary-color);
+      background: var(--primary-light);
     }
 
     .window-item.focused {
-      border-color: var(--success-color, #28a745);
-      background: var(--success-light, #d4edda);
+      border-color: var(--success-color);
+      background: var(--success-light);
     }
 
     .window-header {
@@ -48,7 +88,7 @@ export class WindowItemComponent extends LitElement {
     .window-title {
       font-weight: 600;
       font-size: 16px;
-      color: var(--text-primary, #212529);
+      color: var(--text-primary);
       margin: 0;
       flex: 1;
       margin-right: 12px;
@@ -69,17 +109,17 @@ export class WindowItemComponent extends LitElement {
     }
 
     .status-visible {
-      background: var(--success-color, #28a745);
+      background: var(--success-color);
       color: white;
     }
 
     .status-hidden {
-      background: var(--warning-color, #ffc107);
-      color: var(--text-dark, #212529);
+      background: var(--warning-color);
+      color: var(--text-dark);
     }
 
     .status-focused {
-      background: var(--info-color, #17a2b8);
+      background: var(--info-color);
       color: white;
     }
 
@@ -89,20 +129,20 @@ export class WindowItemComponent extends LitElement {
 
     .window-label {
       font-size: 14px;
-      color: var(--text-secondary, #6c757d);
+      color: var(--text-secondary);
       margin-bottom: 4px;
     }
 
     .window-url {
       font-size: 13px;
-      color: var(--text-muted, #6c757d);
+      color: var(--text-muted);
       word-break: break-all;
       margin-bottom: 4px;
     }
 
     .window-created {
       font-size: 12px;
-      color: var(--text-muted, #6c757d);
+      color: var(--text-muted);
     }
 
     .window-actions {
@@ -126,30 +166,30 @@ export class WindowItemComponent extends LitElement {
     }
 
     .btn-focus {
-      background: var(--primary-color, #007bff);
+      background: var(--primary-color);
       color: white;
     }
 
     .btn-focus:hover {
-      background: var(--primary-dark, #0056b3);
+      background: var(--primary-dark);
     }
 
     .btn-close {
-      background: var(--danger-color, #dc3545);
+      background: var(--danger-color);
       color: white;
     }
 
     .btn-close:hover {
-      background: var(--danger-dark, #c82333);
+      background: var(--danger-dark);
     }
 
     .btn-info {
-      background: var(--info-color, #17a2b8);
+      background: var(--info-color);
       color: white;
     }
 
     .btn-info:hover {
-      background: var(--info-dark, #138496);
+      background: var(--info-dark);
     }
 
     .focused-indicator {
@@ -159,7 +199,7 @@ export class WindowItemComponent extends LitElement {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--success-color, #28a745);
+      background: var(--success-color);
       animation: pulse 2s infinite;
     }
 
@@ -175,6 +215,7 @@ export class WindowItemComponent extends LitElement {
       }
     }
   `;
+
 
   protected willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has('window')) {

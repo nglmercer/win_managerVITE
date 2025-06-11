@@ -24,119 +24,140 @@ export class WindowManagerApp extends LitElement {
   private createWindowForm: any; 
 
   static styles = css`
-    :host {
-      display: block;
-      max-width: 960px;
-      margin: 40px auto;
-      padding: 20px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      --primary-color: #007bff;
-      --primary-dark: #0056b3;
-      --success-color: #28a745;
-      --danger-color: #dc3545;
-      --warning-color: #ffc107;
-      --info-color: #17a2b8;
-      --border-color: #dee2e6;
-      --bg-primary: #ffffff;
-      --bg-secondary: #f8f9fa;
-      --text-primary: #212529;
-      --text-secondary: #6c757d;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .title {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
+  :host {
+    display: block;
+    max-width: 960px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 500;
-    }
+    /* Default (light mode fallback) */
+    --primary-color: #007bff;
+    --primary-dark: #0056b3;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --border-color: #dee2e6;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+  }
 
-    .status-indicator {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--danger-color);
+  /* Dark Mode overrides */
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --primary-color: #66b2ff;
+      --primary-dark: #3399ff;
+      --success-color: #5cb85c;
+      --danger-color: #d9534f;
+      --warning-color: #f0ad4e;
+      --info-color: #5bc0de;
+      --border-color: #444c56;
+      --bg-primary: #1e1e1e;
+      --bg-secondary: #2c2c2c;
+      --text-primary: #eaeaea;
+      --text-secondary: #aaaaaa;
     }
+  }
 
-    .status-indicator.connected {
-      background: var(--success-color);
-      animation: pulse 2s infinite;
-    }
+  /* Resto de tus estilos */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+  }
 
-    .windows-list-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 40px 0 20px;
-    }
+  .title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
 
-    .windows-list-title {
-        font-size: 20px;
-        font-weight: 600;
-    }
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+  }
 
-    .btn-refresh {
-        padding: 8px 16px;
-        border: 1px solid var(--primary-color);
-        background: transparent;
-        color: var(--primary-color);
-        border-radius: 4px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
+  .status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--danger-color);
+  }
 
-    .btn-refresh:hover {
-        background: var(--primary-color);
-        color: white;
-    }
+  .status-indicator.connected {
+    background: var(--success-color);
+    animation: pulse 2s infinite;
+  }
 
-    .no-windows {
-        text-align: center;
-        padding: 40px;
-        color: var(--text-secondary);
-        border: 2px dashed var(--border-color);
-        border-radius: 8px;
-    }
+  .windows-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 40px 0 20px;
+  }
 
-    .notification {
-      padding: 12px 16px;
-      border-radius: 4px;
-      margin-bottom: 20px;
-      font-weight: 500;
-    }
+  .windows-list-title {
+    font-size: 20px;
+    font-weight: 600;
+  }
 
-    .notification.success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
+  .btn-refresh {
+    padding: 8px 16px;
+    border: 1px solid var(--primary-color);
+    background: transparent;
+    color: var(--primary-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
 
-    .notification.error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
+  .btn-refresh:hover {
+    background: var(--primary-color);
+    color: white;
+  }
 
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
-      70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
-    }
-  `;
+  .no-windows {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+  }
+
+  .notification {
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+
+  .notification.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+
+  .notification.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+  }
+`;
+
 
   connectedCallback(): void {
     super.connectedCallback();
