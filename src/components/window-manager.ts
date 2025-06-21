@@ -218,12 +218,13 @@ export class WindowManagerApp extends LitElement {
     }
   }
 
+
   private async handleCreateWindow(e: CustomEvent): Promise<void> {
-    const { label, url } = e.detail;
+    const { label, url, transparent, alwaysOnTop } = e.detail;
     this.createWindowForm = e.target; // Guardamos la referencia al formulario
 
     try {
-      const response = await this.wsService?.createWindow(label, url);
+      const response = await this.wsService?.createWindow(label, url, transparent, alwaysOnTop);
       if (response?.success) {
         this.showNotification('success', `Window "${label}" created successfully.`);
         this.createWindowForm?.reset(); // Reseteamos el formulario
@@ -241,41 +242,47 @@ export class WindowManagerApp extends LitElement {
   private async handleWindowAction(e: CustomEvent): Promise<void> {
     const { label } = e.detail;
     const actionType = e.type; // 'close-window', 'focus-window', etc.
-
+  
     if (!this.wsService) return;
-
+  
     let promise: Promise<WebSocketResponse> | undefined;
-
+  
     switch (actionType) {
-        case 'close-window':
-            promise = this.wsService.closeWindow(label);
-            break;
-        case 'focus-window':
-            promise = this.wsService.focusWindow(label);
-            break;
-        case 'get-window-info':
-            promise = this.wsService.getWindowInfo(label);
-            break;
+      case 'close-window':
+        promise = this.wsService.closeWindow(label);
+        break;
+      case 'focus-window':
+        promise = this.wsService.focusWindow(label);
+        break;
+      case 'get-window-info':
+        promise = this.wsService.getWindowInfo(label);
+        break;
+      case 'toggle-transparency':
+        promise = this.wsService.toggleTransparency(label);
+        break;
+      case 'toggle-always-on-top':
+        promise = this.wsService.toggleAlwaysOnTop(label);
+        break;
     }
-
+  
     if (promise) {
-        try {
-            const response = await promise;
-            if (response.success) {
-                this.showNotification('success', response.message);
-                // Si la acción fue get-info, podemos mostrar los datos en la consola o en un modal
-                if (actionType === 'get-window-info') {
-                    console.log('Window Info:', response.data);
-                }
-            } else {
-                this.showNotification('error', response.message);
-            }
-        } catch (error) {
-            this.showNotification('error', `Action failed: ${(error as Error).message}`);
-        } finally {
-            // Siempre refrescar la lista para reflejar los cambios de estado (foco, visibilidad, etc.)
-            this.fetchWindowList();
+      try {
+        const response = await promise;
+        if (response.success) {
+          this.showNotification('success', response.message);
+          // Si la acción fue get-info, podemos mostrar los datos en la consola o en un modal
+          if (actionType === 'get-window-info') {
+            console.log('Window Info:', response.data);
+          }
+        } else {
+          this.showNotification('error', response.message);
         }
+      } catch (error) {
+        this.showNotification('error', `Action failed: ${(error as Error).message}`);
+      } finally {
+        // Siempre refrescar la lista para reflejar los cambios de estado
+        this.fetchWindowList();
+      }
     }
   }
 
@@ -321,6 +328,8 @@ export class WindowManagerApp extends LitElement {
                   @close-window=${this.handleWindowAction}
                   @focus-window=${this.handleWindowAction}
                   @get-window-info=${this.handleWindowAction}
+                  @toggle-transparency=${this.handleWindowAction}
+                  @toggle-always-on-top=${this.handleWindowAction}
                 ></window-item>
               `)
             : html`<div class="no-windows">No windows have been created yet.</div>`

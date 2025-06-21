@@ -202,6 +202,14 @@ export class WindowItemComponent extends LitElement {
       background: var(--success-color);
       animation: pulse 2s infinite;
     }
+    .btn-warning {
+      background: var(--warning-color);
+      color: var(--text-dark);
+    }
+
+    .btn-warning:hover {
+      background: #e0a800;
+    }
 
     @keyframes pulse {
       0% {
@@ -254,7 +262,20 @@ export class WindowItemComponent extends LitElement {
       bubbles: true
     }));
   }
-
+  private handleToggleTransparency(): void {
+    this.dispatchEvent(new CustomEvent('toggle-transparency', {
+      detail: { label: this.window.label },
+      bubbles: true
+    }));
+  }
+  
+  private handleToggleAlwaysOnTop(): void {
+    this.dispatchEvent(new CustomEvent('toggle-always-on-top', {
+      detail: { label: this.window.label },
+      bubbles: true
+    }));
+  }
+  
   render() {
     const itemClasses = [
       'window-item',
@@ -288,11 +309,30 @@ export class WindowItemComponent extends LitElement {
           <div class="window-created">
             <strong>Created:</strong> ${this.formatDate(this.window.created_at)}
           </div>
+          <div class="window-properties">
+            <strong>Properties:</strong> 
+            ${this.window.is_transparent ? 'Transparent' : 'Opaque'}
+            ${this.window.is_always_on_top ? ' • Always On Top' : ''}
+          </div>
         </div>
 
         <div class="window-actions">
           <button class="btn btn-info" @click="${this.handleGetInfo}" title="Get Info">
             Info
+          </button>
+          <button 
+            class="btn ${this.window.is_transparent ? 'btn-warning' : 'btn-secondary'}" 
+            @click="${this.handleToggleTransparency}" 
+            title="Toggle Transparency"
+          >
+            ${this.window.is_transparent ? 'Opaque' : 'Transparent'}
+          </button>
+          <button 
+            class="btn ${this.window.is_always_on_top ? 'btn-warning' : 'btn-secondary'}" 
+            @click="${this.handleToggleAlwaysOnTop}" 
+            title="Toggle Always On Top"
+          >
+            ${this.window.is_always_on_top ? 'Normal' : 'On Top'}
           </button>
           <button class="btn btn-focus" @click="${this.handleFocus}" title="Focus Window">
             Focus

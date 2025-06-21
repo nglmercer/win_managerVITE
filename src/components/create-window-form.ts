@@ -6,6 +6,8 @@ export class CreateWindowFormComponent extends LitElement {
   @state() private label = '';
   @state() private url = '';
   @state() private isLoading = false;
+  @state() private transparent = false;
+  @state() private alwaysOnTop = false;
 
   static styles = css`
     :host {
@@ -180,6 +182,30 @@ export class CreateWindowFormComponent extends LitElement {
       color: white;
       border-color: var(--primary-color);
     }
+    .checkbox-group {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checkbox-input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--primary-color);
+    }
+
+    .checkbox-label {
+      font-size: 14px;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
   `;
 
 
@@ -197,17 +223,19 @@ export class CreateWindowFormComponent extends LitElement {
     if (!this.label.trim() || !this.url.trim()) {
       return;
     }
-
+  
     if (!this.isValidUrl(this.url)) {
       return;
     }
-
+  
     this.isLoading = true;
-
+  
     this.dispatchEvent(new CustomEvent('create-window', {
       detail: {
         label: this.label.trim(),
-        url: this.url.trim()
+        url: this.url.trim(),
+        transparent: this.transparent,
+        alwaysOnTop: this.alwaysOnTop
       },
       bubbles: true
     }));
@@ -216,7 +244,10 @@ export class CreateWindowFormComponent extends LitElement {
   private handleReset(): void {
     this.label = '';
     this.url = '';
+    this.transparent = false;
+    this.alwaysOnTop = false;
   }
+
 
   private handleQuickUrl(url: string): void {
     this.url = url;
@@ -293,6 +324,33 @@ export class CreateWindowFormComponent extends LitElement {
                   ${item.label}
                 </button>
               `)}
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-help">Window Options:</div>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input
+                  id="transparent"
+                  class="checkbox-input"
+                  type="checkbox"
+                  .checked="${this.transparent}"
+                  @change="${(e: Event) => this.transparent = (e.target as HTMLInputElement).checked}"
+                  ?disabled="${this.isLoading}"
+                />
+                <label class="checkbox-label" for="transparent">Transparent</label>
+              </div>
+              <div class="checkbox-item">
+                <input
+                  id="alwaysOnTop"
+                  class="checkbox-input"
+                  type="checkbox"
+                  .checked="${this.alwaysOnTop}"
+                  @change="${(e: Event) => this.alwaysOnTop = (e.target as HTMLInputElement).checked}"
+                  ?disabled="${this.isLoading}"
+                />
+                <label class="checkbox-label" for="alwaysOnTop">Always On Top</label>
+              </div>
             </div>
           </div>
         </div>

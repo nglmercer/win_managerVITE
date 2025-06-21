@@ -5,6 +5,7 @@ export interface WebSocketMessage {
   data?: any;
   params?: Record<string, string>;
   transparent?: boolean;
+  always_on_top?: boolean; // <--- NUEVO CAMPO
 }
 
 export interface WebSocketResponse {
@@ -21,6 +22,8 @@ export interface WindowInfo {
   created_at: number;
   is_visible: boolean;
   is_focused: boolean;
+  is_transparent: boolean; // <--- AGREGADO
+  is_always_on_top: boolean; // <--- NUEVO CAMPO
 }
 
 export class WebSocketService extends EventTarget {
@@ -33,7 +36,7 @@ export class WebSocketService extends EventTarget {
 
   constructor(customUrl?: string) {
     super();
-    if (customUrl)this.url = customUrl;
+    if (customUrl) this.url = customUrl;
     this.connect();
   }
 
@@ -44,7 +47,7 @@ export class WebSocketService extends EventTarget {
       //@ts-expect-error
       const invoke = window.__TAURI__.core?.invoke;
         try {
-          url =  await invoke<string>('get_websocket_url');
+          url = await invoke<string>('get_websocket_url');
           this.url = url;
           return url;
         } catch (error) {
@@ -54,7 +57,7 @@ export class WebSocketService extends EventTarget {
     } else {
         // Estamos en un navegador web, usar la lógica anterior
         if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
-          url = 'ws://localhost:8080/ws';
+          url = 'ws://localhost:51840/ws';
           this.url = url;
           return url
         }
@@ -65,10 +68,10 @@ export class WebSocketService extends EventTarget {
         this.url = url;
         return url;
     }
-}
+  }
 
-private async connect(): Promise<void> {
-try {
+  private async connect(): Promise<void> {
+    try {
       this.ws = new WebSocket(await this.getWebSocketUrl());
       
       this.ws.onopen = () => {
@@ -145,14 +148,22 @@ try {
     });
   }
 
-  async createWindow(label: string, url: string, transparent: boolean = true): Promise<WebSocketResponse> {
-      return this.sendMessage({
-        action: 'create_window',
-        label,
-        url,
-        transparent
-      });
-    }      
+  // ============ MÉTODOS BÁSICOS DE VENTANA ============
+  
+  async createWindow(
+    label: string, 
+    url: string, 
+    transparent: boolean = false, 
+    alwaysOnTop: boolean = false
+  ): Promise<WebSocketResponse> {
+    return this.sendMessage({
+      action: 'create_window',
+      label,
+      url,
+      transparent,
+      always_on_top: alwaysOnTop
+    });
+  }
 
   async closeWindow(label: string): Promise<WebSocketResponse> {
     return this.sendMessage({
@@ -160,6 +171,15 @@ try {
       label
     });
   }
+
+  async focusWindow(label: string): Promise<WebSocketResponse> {
+    return this.sendMessage({
+      action: 'focus_window',
+      label
+    });
+  }
+
+  // ============ MÉTODOS DE INFORMACIÓN ============
 
   async listWindows(): Promise<WebSocketResponse> {
     return this.sendMessage({
@@ -174,18 +194,58 @@ try {
     });
   }
 
-  async focusWindow(label: string): Promise<WebSocketResponse> {
+  // ============ MÉTODOS DE NAVEGACIÓN ============
+
+  async reloadWindow(label: string): Promise<WebSocketResponse> {
     return this.sendMessage({
-      action: 'focus_window',
+      action: 'reload_window',
       label
     });
   }
+
+  async navigateWindow(label: string, url: string): Promise<WebSocketResponse> {
+    return this.sendMessage({
+      action: 'navigate_window',
+      label,
+      url
+    });
+  }
+
+  // ============ MÉTODOS DE TRANSPARENCIA ============
+
+  async toggleTransparency(label: string): Promise<WebSocketResponse> {
+    return this.sendMessage({
+      action: 'toggle_transparency',
+      label
+    });
+  }
+
+  // ============ MÉTODOS DE ALWAYS ON TOP ============
+
+  async toggleAlwaysOnTop(label: string): Promise<WebSocketResponse> {
+    return this.sendMessage({
+      action: 'toggle_always_on_top',
+      label
+    });
+  }
+
+  async setAlwaysOnTop(label: string, alwaysOnTop: boolean): Promise<WebSocketResponse> {
+    return this.sendMessage({
+      action: 'set_always_on_top',
+      label,
+      always_on_top: alwaysOnTop
+    });
+  }
+
+  // ============ MÉTODOS DE UTILIDAD ============
 
   async ping(): Promise<WebSocketResponse> {
     return this.sendMessage({
       action: 'ping'
     });
   }
+
+  // ============ MÉTODOS DE CONEXIÓN ============
 
   isConnected(): boolean {
     return this.ws?.readyState === WebSocket.OPEN;
@@ -205,5 +265,72 @@ try {
   // Método para obtener la URL actual (útil para debugging)
   getUrl(): string | undefined {
     return this.url;
+  }
+
+  // ============ MÉTODOS DE CONVENIENCIA ============
+
+  /**
+   * Crea una ventana con configuración completa
+   */
+  async createAdvancedWindow(options: {
+    label: string;
+    url: string;
+    transparent?: boolean;
+    alwaysOnTop?: boolean;
+  }): Promise<WebSocketResponse> {
+    return this.createWindow(
+      options.label,
+      options.url,
+      options.transparent ?? false,
+      options.alwaysOnTop ?? false
+    );
+  }
+
+  /**
+   * Obtiene todas las ventanas con su información completa
+   */
+  async getAllWindowsInfo(): Promise<WindowInfo[]> {
+    const response = await this.listWindows();
+    if (response.success && response.data?.windows) {
+      return response.data.windows as WindowInfo[];
+    }
+    return [];
+  }
+
+  /**
+   * Verifica si una ventana existe
+   */
+  async windowExists(label: string): Promise<boolean> {
+    try {
+      const response = await this.getWindowInfo(label);
+      return response.success;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Cierra todas las ventanas
+   */
+  async closeAllWindows(): Promise<void> {
+    const windows = await this.getAllWindowsInfo();
+    const closePromises = windows.map(window => this.closeWindow(window.label));
+    await Promise.allSettled(closePromises);
+  }
+
+  // ============ MÉTODOS DE EVENTOS ============
+
+  /**
+   * Añade un listener para eventos específicos
+   */
+  onWindowEvent(eventType: 'connected' | 'disconnected' | 'error' | 'message', callback: (event: any) => void): void {
+    this.addEventListener(eventType, callback);
+  }
+
+  /**
+   * Remueve un listener de eventos
+   */
+  offWindowEvent(eventType: string, callback: (event: any) => void): void {
+    this.removeEventListener(eventType, callback);
   }
 }
